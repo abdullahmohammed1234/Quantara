@@ -1,20 +1,21 @@
 # Quantara - Quantum Computing Learning Platform
 
-An AI-powered interactive quantum computing learning platform with 3D visualization, AI tutoring, gamification, and a futuristic dark UI.
+An AI-powered interactive quantum computing learning platform with 3D visualization, AI tutoring, gamified challenges, and a futuristic dark "Quantum OS" interface.
 
 ## Features
 
+- **Quantum OS Boot Sequence**: Animated portal boot sequence with system initialization
 - **Interactive Qubit Viewer**: 3D Bloch sphere visualization with real-time controls
 - **Visual Circuit Builder**: Drag-and-drop quantum circuit editor
 - **Gate Library**: Comprehensive library of quantum gates with visualizations
 - **Algorithm Playground**: Interactive quantum algorithm demonstrations
-- **Quantum Error Playground**: Explore quantum errors and decoherence
-- **AI Quantum Tutor**: Chat interface powered by RAG for quantum computing questions
-- **Progress Tracking**: Gamified learning with challenges and achievements
+- **Quantum Error Lab**: Explore quantum errors, decoherence, and noise effects
+- **Quantum Lab Challenges**: Gamified learning with interactive challenges and XP system
+- **AI Quantum Tutor**: Chat interface with code generation (Qiskit, Q#), contextual hints, and chat history
+- **Onboarding Tutorial**: Step-by-step guided tour explaining quantum concepts
+- **Global Search**: Ctrl+K search for gates, algorithms, and challenges
 - **PWA Support**: Installable web app with offline capabilities
-- **Accessibility**: Full accessibility support including keyboard navigation
-- **Interactive Tutorial System**: Step-by-step onboarding with quantum concept explanations
-- **Contextual Help**: Tooltips and help panels for circuit builder and gates
+- **Accessibility**: Full accessibility support including keyboard navigation and ARIA labels
 
 ## Tech Stack
 
@@ -25,6 +26,8 @@ An AI-powered interactive quantum computing learning platform with 3D visualizat
 - Framer Motion for animations
 - Tailwind CSS for styling
 - PWA with service workers
+- KaTeX for math rendering
+- React Markdown for rich text
 
 ### Backend
 - FastAPI (Python)
@@ -74,12 +77,14 @@ An AI-powered interactive quantum computing learning platform with 3D visualizat
 ### Usage
 
 1. Open `http://localhost:5173` in your browser
-2. Navigate using the sidebar to explore different sections
-3. Visit the **Qubits** page to interact with the Bloch sphere
-4. Use the **AI Tutor** panel on the right to ask quantum computing questions
-5. Track your progress on the **Progress** page
-6. Click the **Help button** (❓) in the bottom-right corner to start the interactive tutorial
-7. Hover over quantum concepts (gates, states, etc.) to see detailed tooltips
+2. Watch the Quantum OS boot sequence animation
+3. Register or sign in to access the full platform
+4. Navigate using the sidebar to explore different sections
+5. Visit the **Qubits** page to interact with the Bloch sphere
+6. Use the **AI Tutor** panel on the right to ask quantum computing questions
+7. Complete challenges in **Quantum Lab** to earn XP
+8. Press **Ctrl+K** to search across the platform
+9. Visit the **Tutorial** page for a guided introduction
 
 ## Learning Resources
 
@@ -99,13 +104,12 @@ Hover over elements in the circuit builder to see tooltip explanations for:
 - Probability amplitudes and measurement outcomes
 - Entanglement patterns
 
-### Help Contexts
-The contextual help panel (bottom-left) provides context-aware information for:
-- **General**: Getting started with quantum computing
-- **Circuit**: Circuit builder operations
-- **Gates**: Detailed gate explanations
-- **Measurement**: Understanding measurement and results
-- **Simulation**: How quantum simulation works
+### AI Tutor
+The AI Tutor panel provides:
+- Context-aware responses based on current page
+- Code generation for Qiskit and Q#
+- Chat history with local storage persistence
+- Voice input support (where available)
 
 ## Project Structure
 
@@ -125,10 +129,13 @@ Quantara/
 │   │   │   │   ├── HoloComponents.jsx
 │   │   │   │   └── ...
 │   │   │   ├── AlgorithmPlayground.jsx
+│   │   │   ├── ChallengePlayground.jsx
 │   │   │   ├── CircuitBuilder.jsx
 │   │   │   ├── GateLibrary.jsx
-│   │   │   ├── OnboardingTutorial.jsx      # Tutorial system & tooltips
+│   │   │   ├── GlobalSearchModal.jsx
+│   │   │   ├── OnboardingTutorial.jsx
 │   │   │   ├── ParticleField.jsx
+│   │   │   ├── PortalBoot.jsx
 │   │   │   ├── ProgressDashboard.jsx
 │   │   │   ├── QubitViewer.jsx
 │   │   │   ├── QuantumErrorPlayground.jsx
@@ -136,13 +143,16 @@ Quantara/
 │   │   │   └── ...
 │   │   ├── context/                   # React contexts
 │   │   │   ├── AccessibilityContext.jsx
+│   │   │   ├── AIMessageContext.jsx
 │   │   │   ├── AuthContext.jsx
-│   │   │   ├── ThemeContext.jsx
-│   │   │   └── ...
+│   │   │   ├── GamificationContext.jsx
+│   │   │   └── ThemeContext.jsx
 │   │   ├── hooks/                     # Custom React hooks
 │   │   │   ├── usePWA.jsx
 │   │   │   ├── useKeyboardShortcuts.jsx
-│   │   │   └── ...
+│   │   │   ├── usePinchToZoom.jsx
+│   │   │   ├── useUnifiedAnimation.jsx
+│   │   │   └── useWebSocket.js
 │   │   ├── pages/                     # Page components
 │   │   │   ├── HomePage.jsx
 │   │   │   ├── LandingPage.jsx
@@ -151,9 +161,10 @@ Quantara/
 │   │   │   ├── AlgorithmsPage.jsx
 │   │   │   ├── GateLibraryPage.jsx
 │   │   │   ├── ChallengePage.jsx
-│   │   │   └── QuantumLab.jsx
+│   │   │   ├── QuantumLab.jsx
+│   │   │   ├── SharedCircuitPage.jsx
+│   │   │   └── TutorialPage.jsx
 │   │   ├── styles/                     # Global styles
-│   │   ├── lib/                        # Utility functions
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   ├── package.json
@@ -195,6 +206,18 @@ Quantara/
 
 ### WebSocket
 - `WS /ws` - Real-time communication
+
+## Navigation
+
+The sidebar provides access to:
+- **Dashboard** - Command center with system status
+- **Qubits** - Interactive Bloch sphere visualization
+- **Circuits** - Visual quantum circuit builder
+- **Algorithms** - Algorithm playground
+- **Gate Library** - Comprehensive gate reference
+- **Error Lab** - Quantum error exploration
+- **Quantum Lab** - Challenge-based learning
+- **Tutorial** - Guided onboarding
 
 ## Environment Variables
 
