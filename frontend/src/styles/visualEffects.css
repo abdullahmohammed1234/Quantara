@@ -1,0 +1,435 @@
+/* Quantara - Unified Visual Effects System
+ * Standardized tokens for glows, animations, and backgrounds
+ */
+
+/* ========================================
+   GLOW EFFECTS - Standardized Levels
+   ======================================== */
+
+/* Subtle glow - for hover states, secondary elements */
+.glow-subtle {
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+}
+
+/* Default glow - for interactive elements */
+.glow-default {
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+}
+
+/* Medium glow - for active states, cards */
+.glow-medium {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.5), 0 0 40px rgba(139, 92, 246, 0.2);
+}
+
+/* Intense glow - for prominent elements, CTAs */
+.glow-intense {
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.7), 0 0 60px rgba(139, 92, 246, 0.3);
+}
+
+/* Extreme glow - for heroes, special effects */
+.glow-extreme {
+  box-shadow: 0 0 50px rgba(0, 212, 255, 0.9), 0 0 100px rgba(139, 92, 246, 0.5);
+}
+
+/* Purple variants */
+.glow-purple-subtle {
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.3);
+}
+
+.glow-purple-default {
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
+
+.glow-purple-medium {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(0, 212, 255, 0.2);
+}
+
+.glow-purple-intense {
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.7), 0 0 60px rgba(0, 212, 255, 0.3);
+}
+
+/* Gold variants (for achievements, rewards) */
+.glow-gold-subtle {
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+}
+
+.glow-gold-default {
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+}
+
+.glow-gold-intense {
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.7), 0 0 60px rgba(245, 158, 11, 0.3);
+}
+
+/* Emerald variants (for success states) */
+.glow-emerald-subtle {
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+}
+
+.glow-emerald-default {
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+/* ========================================
+   TEXT GLOW EFFECTS
+   ======================================== */
+
+.text-glow-subtle {
+  text-shadow: 0 0 5px rgba(0, 212, 255, 0.3);
+}
+
+.text-glow-default {
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.text-glow-intense {
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.7), 0 0 40px rgba(139, 92, 246, 0.3);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+/* ========================================
+   CSS KEYFRAME ANIMATIONS
+   ======================================== */
+
+/* Pulse glow - for active/emphasized elements */
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5), 0 0 40px rgba(139, 92, 246, 0.2);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(0, 212, 255, 0.9), 0 0 80px rgba(139, 92, 246, 0.5);
+  }
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Scale in animation */
+@keyframes scaleIn {
+  from { 
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Slide up animation */
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide down animation */
+@keyframes slideDown {
+  from { 
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Bounce in animation */
+@keyframes bounceIn {
+  0% { 
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% { 
+    transform: scale(1.05);
+  }
+  70% { 
+    transform: scale(0.9);
+  }
+  100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Rotation spin animation */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Subtle pulse animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Success pulse - for completion states */
+@keyframes successPulse {
+  0% { 
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  70% { 
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+  100% { 
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* Star pulse - for achievements */
+@keyframes starPulse {
+  from { 
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  to { 
+    transform: scale(1.2);
+    filter: brightness(1.3);
+  }
+}
+
+/* Navigation pulse - for active nav items */
+@keyframes nav-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(0, 212, 255, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+  }
+}
+
+/* Shimmer effect - for loading skeletons */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ========================================
+   ANIMATION CLASSES
+   ======================================== */
+
+/* Utility classes for animations */
+.anim-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.anim-fade-in-fast {
+  animation: fadeIn 0.15s ease-out forwards;
+}
+
+.anim-fade-in-slow {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.anim-scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+.anim-slide-up {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+.anim-slide-down {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+.anim-bounce-in {
+  animation: bounceIn 0.5s ease-out forwards;
+}
+
+.anim-spin {
+  animation: spin 1s linear infinite;
+}
+
+.anim-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.anim-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.anim-success-pulse {
+  animation: successPulse 0.5s ease-out;
+}
+
+.anim-star-pulse {
+  animation: starPulse 0.5s ease-in-out infinite alternate;
+}
+
+.anim-nav-pulse {
+  animation: nav-pulse 2s ease-in-out infinite;
+}
+
+/* Animation delays */
+.anim-delay-fast { animation-delay: 0.1s; }
+.anim-delay-normal { animation-delay: 0.2s; }
+.anim-delay-slow { animation-delay: 0.4s; }
+.anim-delay-slower { animation-delay: 0.8s; }
+
+/* ========================================
+   TRANSITION CLASSES
+   ======================================== */
+
+/* Standardized transition utilities */
+.transition-default {
+  transition: all 0.3s ease;
+}
+
+.transition-fast {
+  transition: all 0.15s ease;
+}
+
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-bounce {
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Color-only transitions */
+.transition-colors {
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.transition-opacity {
+  transition: opacity 0.3s ease;
+}
+
+.transition-transform {
+  transition: transform 0.3s ease;
+}
+
+.transition-shadow {
+  transition: box-shadow 0.3s ease;
+}
+
+/* ========================================
+   BACKGROUND EFFECTS
+   ======================================== */
+
+/* Grid overlay - standardized */
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.grid-overlay-subtle {
+  background-image: 
+    linear-gradient(rgba(0, 212, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.02) 1px, transparent 1px);
+}
+
+.grid-overlay-medium {
+  background-image: 
+    linear-gradient(rgba(0, 212, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+/* Gradient backgrounds - standardized */
+.bg-gradient-quantum {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(139, 92, 246, 0.1));
+}
+
+.bg-gradient-quantum-medium {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(139, 92, 246, 0.2));
+}
+
+.bg-gradient-quantum-strong {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(139, 92, 246, 0.3));
+}
+
+.bg-gradient-radial-cyan {
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.2) 0%, transparent 70%);
+}
+
+.bg-gradient-radial-purple {
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+}
+
+/* ========================================
+   HOVER STATE COMBINATIONS
+   ======================================== */
+
+/* Standard hover effect with glow */
+.hover-glow {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.5), 0 0 40px rgba(139, 92, 246, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Hover with subtle glow */
+.hover-glow-subtle {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.hover-glow-subtle:hover {
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Hover with intense glow */
+.hover-glow-intense {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.hover-glow-intense:hover {
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.7), 0 0 60px rgba(139, 92, 246, 0.4);
+  transform: translateY(-3px);
+}
+
+/* ========================================
+   GLASSMORPHISM UTILITIES
+   ======================================== */
+
+.glass {
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.glass-subtle {
+  background: rgba(17, 24, 39, 0.5);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.glass-strong {
+  background: rgba(17, 24, 39, 0.9);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}

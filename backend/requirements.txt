@@ -1,0 +1,37 @@
+# Quantara Backend Dependencies - Gemini RAG System
+# ================================================
+
+# FastAPI and server
+fastapi>=0.100.0
+uvicorn>=0.20.0
+pydantic>=2.0.0
+
+# Database
+psycopg2-binary>=2.9.0
+sqlalchemy>=2.0.0
+
+# Vector store - FAISS
+faiss-cpu>=1.7.4
+
+# Embeddings - sentence-transformers
+sentence-transformers>=2.2.0
+
+# Google Gemini API (new package)
+google-genai>=0.1.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# Quantum simulation
+qiskit>=1.0.0
+qiskit-aer>=0.13.0
+
+# Utilities
+numpy>=1.24.0
+
+# Password hashing
+passlib>=1.7.4
+bcrypt>=4.0.0
+
+# JWT tokens
+PyJWT>=2.8.0
