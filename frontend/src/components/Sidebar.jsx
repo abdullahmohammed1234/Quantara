@@ -11,7 +11,8 @@ const navItems = [
   { path: '/algorithms', label: 'Algorithms', icon: '🧠', color: '#ec4899' },
   { path: '/gate-library', label: 'Gate Library', icon: '📚', color: '#06b6d4' },
   { path: '/error-playground', label: 'Error Lab', icon: '⚡', color: '#f59e0b' },
-  { path: '/quantum-lab', label: 'Quantum Lab', icon: '⚗', color: '#10b981' }
+  { path: '/quantum-lab', label: 'Quantum Lab', icon: '⚗', color: '#10b981' },
+  { path: '/tutorial', label: 'Tutorial', icon: '❓', color: '#a855f7' }
 ]
 
 /**

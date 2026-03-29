@@ -1,6 +1,32 @@
+/**
+ * QuantumOS - Desktop-style quantum computing interface component
+ * 
+ * Simulates a desktop operating system environment for quantum computing operations.
+ * Features include:
+ * - macOS-style menu bar and dock
+ * - Draggable/resizable application windows
+ * - Simulated desktop with widgets and shortcuts
+ * - Multi-app workspace management
+ * 
+ * @module QuantumOS
+ * @since 1.0.0
+ * @see {@link https://en.wikipedia.org/wiki/Quantum_computing} for quantum computing concepts
+ */
+
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 
+/**
+ * MenuBar - macOS-style top menu bar component
+ * 
+ * Displays system menu items and status indicators including:
+ * - System menu (Quantum OS, File, Edit, View, Window, Help)
+ * - Status icons (Wi-Fi, Battery, Performance Mode)
+ * - Real-time clock display
+ * 
+ * @component
+ * @returns {JSX.Element} Animated menu bar
+ */
 // Top Menu Bar - macOS style
 const MenuBar = () => {
   const [time, setTime] = useState(new Date())
@@ -66,6 +92,21 @@ const MenuBar = () => {
   )
 }
 
+/**
+ * DockItem - Individual dock application launcher
+ * 
+ * Represents an application icon in the bottom dock with hover animations
+ * and tooltip labels. Supports active state indicators and custom colors.
+ * 
+ * @component
+ * @param {Object} props - Component properties
+ * @param {string} props.icon - Emoji or icon for the application
+ * @param {string} props.label - Display label for tooltip
+ * @param {function} props.onClick - Click handler for launching app
+ * @param {boolean} [props.isActive=false] - Active state indicator
+ * @param {string} [props.color='#00d4ff'] - Accent color for active state
+ * @returns {JSX.Element} Animated dock item with hover effect
+ */
 // App Dock Item
 const DockItem = ({ icon, label, onClick, isActive, color }) => {
   const [isHovered, setIsHovered] = useState(false)

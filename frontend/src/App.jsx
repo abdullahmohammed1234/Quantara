@@ -20,6 +20,8 @@ import LandingPage from './pages/LandingPage'
 import SharedCircuitPage from './pages/SharedCircuitPage'
 import GlobalSearchModal from './components/GlobalSearchModal'
 import PortalBoot from './components/PortalBoot'
+import { OnboardingProvider } from './components/OnboardingTutorial'
+import TutorialPage from './pages/TutorialPage'
 
 // Lazy load heavy components for better performance
 const TutorPanel = lazy(() => import('./components/TutorPanel'))
@@ -253,6 +255,7 @@ const RouteLoader = () => (
 /**
  * App - Root component
  * No authentication required - Landing page shown first, then main app with sidebar
+ * Wrapped with OnboardingProvider for tutorial system
  */
 const App = () => {
   // Use sessionStorage - clears when browser closes, shows on each new browser session
@@ -269,29 +272,32 @@ const App = () => {
     <>
       <PortalBoot enabled={showBoot} onComplete={handleBootComplete} />
       <BrowserRouter>
-      <AccessibilityProvider>
-        <AuthProvider>
-          <AIMessageProvider>
-            <GamificationProvider>
-              <Routes>
-                  <Route path="/" element={<LandingPage />} />
-                  <Route element={<AppContent />}>
-                    <Route path="/dashboard" element={<HomePage />} />
-                    <Route path="/qubits" element={<QubitsPage />} />
-                    <Route path="/circuits" element={<CircuitsPage />} />
-                    <Route path="/algorithms" element={<AlgorithmsPage />} />
-                    <Route path="/gate-library" element={<GateLibraryPage />} />
-                    <Route path="/challenge/:challengeId" element={<ChallengePage />} />
-                    <Route path="/error-playground" element={<QuantumErrorPlayground />} />
-                    <Route path="/quantum-lab" element={<QuantumLabPage />} />
-                    <Route path="/circuit/:shareId" element={<SharedCircuitPage />} />
-                  </Route>
-                </Routes>
-              </GamificationProvider>
-          </AIMessageProvider>
-        </AuthProvider>
-      </AccessibilityProvider>
-      </BrowserRouter>
+        <AccessibilityProvider>
+          <AuthProvider>
+            <AIMessageProvider>
+              <GamificationProvider>
+                <OnboardingProvider>
+                  <Routes>
+                      <Route path="/" element={<LandingPage />} />
+                      <Route element={<AppContent />}>
+                        <Route path="/dashboard" element={<HomePage />} />
+                        <Route path="/qubits" element={<QubitsPage />} />
+                        <Route path="/circuits" element={<CircuitsPage />} />
+                        <Route path="/algorithms" element={<AlgorithmsPage />} />
+                        <Route path="/gate-library" element={<GateLibraryPage />} />
+                        <Route path="/challenge/:challengeId" element={<ChallengePage />} />
+                        <Route path="/error-playground" element={<QuantumErrorPlayground />} />
+                        <Route path="/quantum-lab" element={<QuantumLabPage />} />
+                        <Route path="/circuit/:shareId" element={<SharedCircuitPage />} />
+                      <Route path="/tutorial" element={<TutorialPage />} />
+                      </Route>
+                    </Routes>
+                  </OnboardingProvider>
+                </GamificationProvider>
+              </AIMessageProvider>
+            </AuthProvider>
+          </AccessibilityProvider>
+        </BrowserRouter>
       </>
   )
 }

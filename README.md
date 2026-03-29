@@ -13,6 +13,8 @@ An AI-powered interactive quantum computing learning platform with 3D visualizat
 - **Progress Tracking**: Gamified learning with challenges and achievements
 - **PWA Support**: Installable web app with offline capabilities
 - **Accessibility**: Full accessibility support including keyboard navigation
+- **Interactive Tutorial System**: Step-by-step onboarding with quantum concept explanations
+- **Contextual Help**: Tooltips and help panels for circuit builder and gates
 
 ## Tech Stack
 
@@ -76,6 +78,34 @@ An AI-powered interactive quantum computing learning platform with 3D visualizat
 3. Visit the **Qubits** page to interact with the Bloch sphere
 4. Use the **AI Tutor** panel on the right to ask quantum computing questions
 5. Track your progress on the **Progress** page
+6. Click the **Help button** (❓) in the bottom-right corner to start the interactive tutorial
+7. Hover over quantum concepts (gates, states, etc.) to see detailed tooltips
+
+## Learning Resources
+
+### Interactive Tutorial
+The onboarding tutorial covers these key concepts:
+- **Qubits**: Understanding quantum bits and superposition
+- **Hadamard Gate**: Creating superposition states
+- **Circuit Builder**: Building your first quantum circuit
+- **Measurement**: Observing quantum states
+- **Entanglement**: Quantum correlations between qubits
+- **Bloch Sphere**: Geometric representation of quantum states
+
+### Quantum Concepts Reference
+Hover over elements in the circuit builder to see tooltip explanations for:
+- Gate operations and their matrix representations
+- Quantum state notation (|ψ⟩, |0⟩, |1⟩)
+- Probability amplitudes and measurement outcomes
+- Entanglement patterns
+
+### Help Contexts
+The contextual help panel (bottom-left) provides context-aware information for:
+- **General**: Getting started with quantum computing
+- **Circuit**: Circuit builder operations
+- **Gates**: Detailed gate explanations
+- **Measurement**: Understanding measurement and results
+- **Simulation**: How quantum simulation works
 
 ## Project Structure
 
@@ -97,6 +127,7 @@ Quantara/
 │   │   │   ├── AlgorithmPlayground.jsx
 │   │   │   ├── CircuitBuilder.jsx
 │   │   │   ├── GateLibrary.jsx
+│   │   │   ├── OnboardingTutorial.jsx      # Tutorial system & tooltips
 │   │   │   ├── ParticleField.jsx
 │   │   │   ├── ProgressDashboard.jsx
 │   │   │   ├── QubitViewer.jsx

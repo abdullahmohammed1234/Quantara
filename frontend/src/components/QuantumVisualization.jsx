@@ -1,8 +1,33 @@
+/**
+ * QuantumVisualization - Real-time quantum state visualization component
+ * 
+ * Renders interactive 3D-like visualizations of qubit states on the Bloch sphere
+ * and multi-qubit system configurations. Supports entanglement indicators and
+ * animated state transitions.
+ * 
+ * @module QuantumVisualization
+ * @since 1.0.0
+ */
+
 import React, { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import usePinchToZoom from '../hooks/usePinchToZoom'
 
-// Qubit Sphere Component
+/**
+ * QubitSphere - Individual qubit visualization on Bloch sphere
+ * 
+ * Represents a single qubit's quantum state using a 3D spherical visualization.
+ * The position on the sphere (theta, phi angles) represents the quantum state
+ * vector |ψ⟩ = cos(θ/2)|0⟩ + e^(iφ)sin(θ/2)|1⟩.
+ * 
+ * @component
+ * @param {Object} props - Component properties
+ * @param {number} props.index - Qubit index in the system
+ * @param {number} [props.theta=0] - Polar angle (0 to π) from z-axis
+ * @param {number} [props.phi=0] - Azimuthal angle (0 to 2π) in xy-plane
+ * @param {boolean} [props.isEntangled=false] - Whether qubit is entangled with others
+ * @returns {JSX.Element} Animated qubit sphere visualization
+ */
 const QubitSphere = ({ index, theta = 0, phi = 0, isEntangled = false }) => {
   const [rotation, setRotation] = useState({ x: 0, y: 0 })
   

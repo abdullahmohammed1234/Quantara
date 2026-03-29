@@ -1,9 +1,40 @@
+/**
+ * CircuitBuilder - Interactive quantum circuit construction and simulation component
+ * 
+ * A comprehensive circuit builder that allows users to:
+ * - Create multi-qubit quantum circuits using a visual gate library
+ * - Select target qubits for gate operations
+ * - Configure rotation gates with custom angle parameters
+ * - Run simulations and visualize quantum states
+ * - Support both single-qubit and multi-qubit gates
+ * 
+ * @module CircuitBuilder
+ * @author Quantara Development Team
+ * @since 1.0.0
+ */
+
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toastManager } from '../lib/api'
 import QuantumVisualization from './QuantumVisualization'
 
-// Gate definitions with full metadata
+/**
+ * GATE_CATALOG - Comprehensive quantum gate definitions with metadata
+ * 
+ * Each gate entry contains:
+ * - name: Display symbol for the gate
+ * - label: Human-readable name
+ * - description: Brief explanation of gate function
+ * - category: Classification (single, rotation, multi, measurement)
+ * - color: Visual accent color for UI elements
+ * - hasParam: Optional flag for gates requiring numeric parameters
+ * 
+ * Gate Categories:
+ * - Single: Fundamental 1-qubit gates (H, X, Y, Z, S, T)
+ * - Rotation: Parameterized rotation gates (Rx, Ry, Rz)
+ * - Multi: Entangling 2-qubit gates (CNOT, CX, CZ, SWAP)
+ * - Measurement: State measurement operators (M)
+ */
 const GATE_CATALOG = {
   H: { name: 'H', label: 'Hadamard', description: 'Creates superposition', category: 'single', color: '#00d4ff' },
   X: { name: 'X', label: 'Pauli-X', description: 'Quantum NOT gate', category: 'single', color: '#ef4444' },
@@ -21,17 +52,65 @@ const GATE_CATALOG = {
   M: { name: 'M', label: 'Measure', description: 'Measurement operator', category: 'measurement', color: '#22c55e' }
 }
 
+/**
+ * CircuitOperation - Represents a single quantum gate operation in a circuit
+ * 
+ * Encapsulates all information needed to describe a quantum operation including:
+ * - The gate type being applied
+ * - Target qubit indices for the operation
+ * - Control qubit indices for multi-qubit gates
+ * - Optional parameters (e.g., rotation angles)
+ * - Unique identification and timestamp for state management
+ * 
+ * @class
+ * @example
+ * // Single qubit Hadamard gate on qubit 0
+ * const hadamardOp = new CircuitOperation('H', [0], [], {})
+ * 
+ * // CNOT gate with control=0, target=1
+ * const cnotOp = new CircuitOperation('CNOT', [1], [0], {})
+ */
 class CircuitOperation {
+  /**
+   * Creates a new CircuitOperation instance
+   * @param {string} gate - The gate name from GATE_CATALOG
+   * @param {number[]} targetQubits - Array of target qubit indices
+   * @param {number[]} [controlQubits=[]] - Array of control qubit indices for multi-qubit gates
+   * @param {Object} [params={}] - Optional parameters like rotation angles
+   */
   constructor(gate, targetQubits, controlQubits = [], params = {}) {
+    /** @type {string} Unique identifier for this operation */
     this.id = `${gate}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    /** @type {string} The gate name */
     this.gate = gate
+    /** @type {number[]} Target qubit indices */
     this.targetQubits = targetQubits
+    /** @type {number[]} Control qubit indices */
     this.controlQubits = controlQubits
+    /** @type {Object} Optional parameters */
     this.params = params
+    /** @type {number} Timestamp of creation */
     this.timestamp = Date.now()
   }
 }
 
+/**
+ * CircuitBuilder - Main quantum circuit construction component
+ * 
+ * Provides an interactive interface for building and simulating quantum circuits.
+ * Supports multi-qubit operations, parameterized gates, and real-time visualization.
+ * 
+ * @param {Object} props - Component properties
+ * @param {function} [props.onCircuitChange] - Callback when circuit operations change
+ * @param {function} [props.onRunSimulation] - Callback when simulation completes
+ * @param {CircuitOperation[]|string[]} [props.circuit] - Initial circuit data
+ * @param {string|null} [props.userId=null] - User ID for persistence
+ * @param {string|null} [props.designId=null] - Design ID for shared circuits
+ * @param {boolean} [props.autosaveEnabled=true] - Enable autosave functionality
+ * @param {number} [props.initialQubits=2] - Initial number of qubits
+ * @param {boolean} [props.showVisualization=true] - Show quantum visualization
+ * @returns {JSX.Element} The CircuitBuilder component
+ */
 const CircuitBuilder = ({ 
   onCircuitChange, 
   onRunSimulation, 
