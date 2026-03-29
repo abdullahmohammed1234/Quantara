@@ -528,11 +528,11 @@ h6 {
 .welcome-banner {
   background: linear-gradient(135deg, var(--bg-darker), var(--bg-dark));
   border: 1px solid rgba(0, 212, 255, 0.19);
-  border-radius: var(--radius-xl);
+  border-radius: 16px;
   padding: 24px;
   margin-bottom: 32px;
   position: relative;
-  /* overflow hidden removed to allow corner decorations to display properly */
+  overflow: hidden;
 }
 
 /* Welcome banner decorative corners - Bracket style */
@@ -694,7 +694,7 @@ h6 {
 .feature-card {
   background: linear-gradient(135deg, var(--bg-darker), var(--bg-dark));
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
   padding: 24px;
   cursor: pointer;
   transition: all 0.2s;

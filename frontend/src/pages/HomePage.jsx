@@ -7,7 +7,6 @@ import { FeatureCard, FeatureCardsGrid } from '../components/ui/FeatureCard'
 // Lazy load heavy 3D visualization components for better performance
 // These components use Three.js and are heavy, so we defer their loading
 const QuantumVisualization = lazy(() => import('../components/QuantumVisualization'))
-const Simple3DCircuit = lazy(() => import('../components/3D/Circuit3D').then(module => ({ default: module.Simple3DCircuit })))
 const ParticleBackground = lazy(() => import('../components/3D/ParticleSystems').then(module => ({ default: module.ParticleBackground })))
 const HolographicStatDisplay = lazy(() => import('../components/3D/HolographicUI').then(module => ({ default: module.HolographicStatDisplay })))
 
@@ -200,26 +199,8 @@ const HomePage = () => {
           />
         </Suspense>
       </div>
-
-      {/* 3D Circuit Visualization - Lazy loaded */}
-      <div className="visualization-section">
-        <h3 className="visualization-title">
-          <span className="visualization-title-accent">◆</span> 3D CIRCUIT VIEW
-        </h3>
-        <Suspense fallback={<VisualizationLoader />}>
-          <Simple3DCircuit 
-            gates={[
-              { gate: 'H', target: 0 },
-              { gate: 'H', target: 1 },
-              { gate: 'CNOT', control: 0, target: 1 },
-              { gate: 'H', target: 0 },
-            ]}
-            numQubits={2}
-          />
-        </Suspense>
-        </div>
-      </div>
       {/* Centralized container end */}
+      </div>
     </div>
   )
 }

@@ -20,7 +20,10 @@ from typing import Optional, List, Dict
 
 # Load environment variables from .env file
 from dotenv import load_dotenv
-load_dotenv()
+
+# Get the path to the .env file (in the same directory as this script)
+env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+load_dotenv(env_path)
 
 # Import our RAG components
 from query import QuantumRAG, create_rag_system, TOP_K

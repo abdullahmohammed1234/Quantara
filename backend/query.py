@@ -23,6 +23,14 @@ from sentence_transformers import SentenceTransformer
 # For FAISS
 import faiss
 
+# Load environment variables from .env file
+from dotenv import load_dotenv
+
+# Get the path to the .env file (in the same directory as this script)
+BASE_DIR_QUERY = os.path.dirname(os.path.abspath(__file__))
+env_path = os.path.join(BASE_DIR_QUERY, ".env")
+load_dotenv(env_path)
+
 # For Gemini API - support both old and new packages
 GEMINI_CLIENT = None
 USE_NEW_GEMINI = False
