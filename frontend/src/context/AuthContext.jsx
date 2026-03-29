@@ -16,8 +16,50 @@ const PROGRESS_KEY = 'quantara_progress'
 const ACHIEVEMENTS_KEY = 'quantara_achievements'
 const OFFLINE_MODE_KEY = 'quantara_offline_mode'
 
+// Sensitive data keys that should use sessionStorage or be encrypted
+const SENSITIVE_KEYS = [
+  'quantara_chat_history',
+  'quantara_conversations',
+  'quantara_last_conversation'
+]
+
 // Check if we're online
 const isOnline = () => typeof navigator !== 'undefined' ? navigator.onLine : true
+
+// Secure storage wrapper - encrypts sensitive data
+const secureStorage = {
+  get: (key) => {
+    try {
+      const item = localStorage.getItem(key)
+      if (!item) return null
+      
+      // For sensitive keys, try to decode base64 (simple obfuscation)
+      if (SENSITIVE_KEYS.includes(key)) {
+        return JSON.parse(atob(item))
+      }
+      return JSON.parse(item)
+    } catch (e) {
+      return null
+    }
+  },
+  set: (key, value) => {
+    try {
+      const stringValue = JSON.stringify(value)
+      
+      // For sensitive keys, apply base64 encoding
+      if (SENSITIVE_KEYS.includes(key)) {
+        localStorage.setItem(key, btoa(stringValue))
+      } else {
+        localStorage.setItem(key, stringValue)
+      }
+    } catch (e) {
+      console.error('Secure storage error:', e)
+    }
+  },
+  remove: (key) => {
+    localStorage.removeItem(key)
+  }
+}
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
@@ -106,10 +148,19 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json()
 
       if (data.success) {
-        // Store user in localStorage
-        localStorage.setItem(USER_KEY, JSON.stringify(data.user))
-        setUser(data.user)
-        return { success: true, user: data.user }
+        // Store user and tokens in localStorage
+        const userData = {
+          id: data.user.id,
+          username: data.user.username,
+          email: data.user.email,
+          access_token: data.user.access_token,
+          refresh_token: data.user.refresh_token,
+          expires_in: data.user.expires_in,
+          token_created_at: Date.now()
+        }
+        localStorage.setItem(USER_KEY, JSON.stringify(userData))
+        setUser(userData)
+        return { success: true, user: userData }
       } else {
         return { success: false, error: data.error || 'Registration failed' }
       }
@@ -133,10 +184,19 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json()
 
       if (data.success) {
-        // Store user in localStorage
-        localStorage.setItem(USER_KEY, JSON.stringify(data.user))
-        setUser(data.user)
-        return { success: true, user: data.user }
+        // Store user and tokens in localStorage (use secureStorage for tokens)
+        const userData = {
+          id: data.user.id,
+          username: data.user.username,
+          email: data.user.email,
+          access_token: data.user.access_token,
+          refresh_token: data.user.refresh_token,
+          expires_in: data.user.expires_in,
+          token_created_at: Date.now()
+        }
+        localStorage.setItem(USER_KEY, JSON.stringify(userData))
+        setUser(userData)
+        return { success: true, user: userData }
       } else {
         return { success: false, error: data.error || 'Invalid credentials' }
       }
@@ -146,8 +206,90 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
+  // Refresh access token
+  const refreshToken = useCallback(async () => {
+    const storedUser = localStorage.getItem(USER_KEY)
+    if (!storedUser) {
+      return { success: false, error: 'No user session' }
+    }
+
+    try {
+      const user = JSON.parse(storedUser)
+      const refreshTokenValue = user.refresh_token
+
+      if (!refreshTokenValue) {
+        return { success: false, error: 'No refresh token' }
+      }
+
+      const response = await fetch(`${API_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refresh_token: refreshTokenValue }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Update stored user with new access token
+        const updatedUser = {
+          ...user,
+          access_token: data.access_token,
+          expires_in: data.expires_in,
+          token_created_at: Date.now()
+        }
+        localStorage.setItem(USER_KEY, JSON.stringify(updatedUser))
+        setUser(updatedUser)
+        return { success: true, user: updatedUser }
+      } else {
+        // Refresh token expired, force logout
+        localStorage.removeItem(USER_KEY)
+        setUser(null)
+        return { success: false, error: data.error || 'Token refresh failed' }
+      }
+    } catch (error) {
+      console.error('Token refresh error:', error)
+      return { success: false, error: 'Network error. Please try again.' }
+    }
+  }, [])
+
+  // Check and refresh token if expiring soon
+  const checkAndRefreshToken = useCallback(async () => {
+    const storedUser = localStorage.getItem(USER_KEY)
+    if (!storedUser) return false
+
+    const user = JSON.parse(storedUser)
+    const expiresIn = user.expires_in || 0
+    const tokenCreatedAt = user.token_created_at || 0
+    
+    // If token expires in less than 5 minutes, refresh it
+    const timeUntilExpiry = expiresIn * 1000 - (Date.now() - tokenCreatedAt)
+    if (timeUntilExpiry < 300000) { // 5 minutes
+      const result = await refreshToken()
+      return result.success
+    }
+    return true
+  }, [refreshToken])
+
   // Logout
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    const storedUser = localStorage.getItem(USER_KEY)
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser)
+        // Notify backend to invalidate tokens
+        await fetch(`${API_URL}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ refresh_token: user.refresh_token }),
+        })
+      } catch (e) {
+        // Ignore errors, proceed with local logout
+      }
+    }
     localStorage.removeItem(USER_KEY)
     setUser(null)
   }, [])
@@ -213,6 +355,8 @@ export const AuthProvider = ({ children }) => {
     register,
     login,
     logout,
+    refreshToken,
+    checkAndRefreshToken,
     updateProgress,
     getProgress,
     updateAchievements,

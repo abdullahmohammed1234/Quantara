@@ -86,27 +86,72 @@ const checkPasswordStrength = (password) => {
 }
 
 /**
- * Form validation helper
+ * Enhanced form validation helper with robust validation
  */
 const validateForm = (formData, mode) => {
   const errors = []
   
+  // Email validation - more robust regex
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  
+  // Username validation - alphanumeric and underscores only, 3-20 chars
+  const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/
+  
+  // Password validation - must meet strong requirements
+  const passwordRequirements = {
+    minLength: 8,
+    hasUppercase: /[A-Z]/.test(formData.password || ''),
+    hasLowercase: /[a-z]/.test(formData.password || ''),
+    hasNumber: /[0-9]/.test(formData.password || ''),
+    hasSpecial: /[^a-zA-Z0-9]/.test(formData.password || ''),
+  }
+  
   if (mode === 'register') {
+    // Username validation
     if (!formData.username || formData.username.length < 3) {
       errors.push({ field: 'username', message: 'Username must be at least 3 characters' })
-    }
-    if (!formData.username || formData.username.length > 20) {
+    } else if (formData.username.length > 20) {
       errors.push({ field: 'username', message: 'Username must be less than 20 characters' })
+    } else if (!usernameRegex.test(formData.username)) {
+      errors.push({ field: 'username', message: 'Username can only contain letters, numbers, and underscores' })
+    }
+    
+    // Check for common usernames
+    const commonUsernames = ['admin', 'root', 'user', 'test', 'guest', 'administrator']
+    if (commonUsernames.includes(formData.username.toLowerCase())) {
+      errors.push({ field: 'username', message: 'This username is not allowed' })
     }
   }
   
-  if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
+  // Email validation
+  if (!formData.email || !emailRegex.test(formData.email)) {
     errors.push({ field: 'email', message: 'Please enter a valid email address' })
   }
   
   if (mode === 'register') {
+    // Password strength validation
     if (!formData.password || formData.password.length < 8) {
       errors.push({ field: 'password', message: 'Password must be at least 8 characters' })
+    } else {
+      const pwd = formData.password
+      if (!passwordRequirements.hasUppercase) {
+        errors.push({ field: 'password', message: 'Password must contain at least one uppercase letter' })
+      }
+      if (!passwordRequirements.hasLowercase) {
+        errors.push({ field: 'password', message: 'Password must contain at least one lowercase letter' })
+      }
+      if (!passwordRequirements.hasNumber) {
+        errors.push({ field: 'password', message: 'Password must contain at least one number' })
+      }
+      if (!passwordRequirements.hasSpecial) {
+        errors.push({ field: 'password', message: 'Password must contain at least one special character' })
+      }
+    }
+    
+    // Check for common passwords
+    const commonPasswords = ['password', '12345678', 'qwerty123', 'admin123', 'letmein']
+    if (commonPasswords.includes(formData.password.toLowerCase())) {
+      errors.push({ field: 'password', message: 'This password is too common. Please choose a stronger password' })
     }
   }
   
@@ -133,6 +178,16 @@ const LandingPage = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   
+  // Rate limiting state
+  const [loginAttempts, setLoginAttempts] = useState(0)
+  const [lockoutUntil, setLockoutUntil] = useState(null)
+  const [lastAttemptTime, setLastAttemptTime] = useState(0)
+  
+  // Rate limit configuration
+  const MAX_LOGIN_ATTEMPTS = 5
+  const LOCKOUT_DURATION = 60000 // 60 seconds in milliseconds
+  const ATTEMPT_WINDOW = 300000 // 5 minutes in milliseconds
+  
   const { register, login, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
@@ -151,6 +206,19 @@ const LandingPage = () => {
     setError('')
     setErrors({})
     
+    // Check for rate limit lockout
+    if (lockoutUntil && Date.now() < lockoutUntil) {
+      const remainingSeconds = Math.ceil((lockoutUntil - Date.now()) / 1000)
+      setError(`Too many login attempts. Please try again in ${remainingSeconds} seconds.`)
+      return
+    }
+    
+    // Clear lockout if expired
+    if (lockoutUntil && Date.now() >= lockoutUntil) {
+      setLockoutUntil(null)
+      setLoginAttempts(0)
+    }
+    
     // Validate form
     const validationErrors = validateForm(formData, mode)
     if (validationErrors.length > 0) {
@@ -168,15 +236,40 @@ const LandingPage = () => {
     if (mode === 'register') {
       result = await register(formData.username, formData.email, formData.password)
     } else {
+      // Login mode - track attempts
+      const now = Date.now()
+      
+      // Reset attempts if outside the attempt window
+      if (now - lastAttemptTime > ATTEMPT_WINDOW) {
+        setLoginAttempts(1)
+        setLastAttemptTime(now)
+      } else {
+        setLoginAttempts(prev => prev + 1)
+      }
+      
       result = await login(formData.email, formData.password)
+      
+      // If login failed, check if we need to lockout
+      if (!result.success) {
+        const currentAttempts = mode === 'login' ? loginAttempts + 1 : 0
+        
+        if (currentAttempts >= MAX_LOGIN_ATTEMPTS) {
+          setLockoutUntil(Date.now() + LOCKOUT_DURATION)
+          setError(`Too many failed login attempts. Please try again in ${LOCKOUT_DURATION / 1000} seconds.`)
+        } else {
+          const attemptsRemaining = MAX_LOGIN_ATTEMPTS - currentAttempts
+          setError(`Invalid credentials. ${attemptsRemaining} attempt${attemptsRemaining !== 1 ? 's' : ''} remaining.`)
+        }
+      }
     }
 
     setIsLoading(false)
 
     if (result.success) {
+      // Reset rate limiting on successful login
+      setLoginAttempts(0)
+      setLockoutUntil(null)
       navigate('/dashboard')
-    } else {
-      setError(result.error)
     }
   }
 
