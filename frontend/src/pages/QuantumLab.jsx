@@ -346,6 +346,7 @@ const QuantumLabPage = () => {
           <CircuitBuilder 
             onCircuitChange={handleCircuitChange}
             onRunSimulation={handleRunSimulation}
+            showVisualization={false}
           />
         </div>
 
