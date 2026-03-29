@@ -3,6 +3,7 @@ export { Button } from "./Button"
 export { Input } from "./Input"
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from "./Card"
 export { Slider, QuantumSlider } from "./Slider"
+export { default as Modal } from "./Modal"
 
 // Holographic UI Components
 export { HoloCard, HoloButton, HoloInput, HoloSlider, StatCard, SectionHeader } from "./HoloComponents"

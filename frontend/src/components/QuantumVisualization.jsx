@@ -104,9 +104,10 @@ const MultiQubitVisualization = ({ numQubits, gateOperations }) => {
     for (let i = 0; i < numQubits; i++) {
       const theta = Math.PI / 4 + i * Math.PI / 4
       const phi = Math.random() * 2 * Math.PI
-      const isEntangled = gateOperations && gateOperations.some(op => 
-        op.type === 'CNOT' && (op.control === i || op.target === i)
-      )
+      const isEntangled = gateOperations && gateOperations.some(op => {
+        const gateType = typeof op === 'string' ? op : (typeof op.type === 'string' ? op.type : null)
+        return gateType === 'CNOT' && (op.control === i || op.target === i)
+      })
       states.push({ index: i, theta, phi, isEntangled })
     }
     return states
@@ -298,10 +299,13 @@ const QuantumVisualization = ({ numQubits = 2, gateOperations = [], isPlaying = 
       
       if (gateOperations) {
         gateOperations.forEach(op => {
-          if (op.type === 'H') {
+          // Ensure op.type is handled correctly (could be string or object)
+          const gateType = typeof op === 'string' ? op : (typeof op.type === 'string' ? op.type : null)
+          if (gateType === 'H') {
             prob *= 1 + 0.5 * Math.sin(i * Math.PI / 2)
-          } else if (op.type === 'X') {
-            const flipped = i ^ (1 << op.target)
+          } else if (gateType === 'X') {
+            const target = typeof op === 'string' ? 0 : (op.target || 0)
+            const flipped = i ^ (1 << target)
             if (flipped === i) prob *= 1.5
           }
         })
@@ -320,15 +324,17 @@ const QuantumVisualization = ({ numQubits = 2, gateOperations = [], isPlaying = 
     
     if (gateOperations) {
       gateOperations.forEach((op) => {
-        const state = op.type === 'H' 
+        // Ensure op.type is a string (handle both string and object cases)
+        const gateType = typeof op === 'string' ? op : (typeof op.type === 'string' ? op.type : JSON.stringify(op.type))
+        const state = gateType === 'H' 
           ? `(${['|0⟩', '|1⟩'][op.target]}+${['|0⟩', '|1⟩'][op.target ^ 1]})/√2`
-          : op.type === 'X'
+          : gateType === 'X'
           ? `X|${['0', '1'][op.target]}⟩`
-          : op.type === 'CNOT'
+          : gateType === 'CNOT'
           ? `CNOT|${['00', '01', '10', '11'][op.control * 2 + op.target]}⟩`
-          : op.type
+          : `Gate: ${gateType}`
         
-        steps.push({ gate: `${op.type} gate`, state })
+        steps.push({ gate: `${gateType} gate`, state })
       })
     }
     

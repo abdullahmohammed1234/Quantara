@@ -132,11 +132,24 @@ const CircuitBuilder = ({
   const saveTimeoutRef = useRef(null)
 
   useEffect(() => {
-    if (externalCircuit !== undefined) {
-      if (Array.isArray(externalCircuit)) {
-        const ops = externalCircuit.map((gate, idx) => new CircuitOperation(gate, [0]))
-        setOperations(ops)
-      }
+    // Only load external circuit on mount or when explicitly provided
+    // Don't override user's own additions
+    const currentGates = operations.map(op => op.gate)
+    const newGates = Array.isArray(externalCircuit) ? externalCircuit.map(g => typeof g === 'string' ? g : (typeof g === 'object' ? g.gate : g)) : []
+    
+    // Only update if external circuit has values and current operations are empty
+    // This happens when cloning a shared circuit
+    if (
+      Array.isArray(externalCircuit) && 
+      externalCircuit.length > 0 && 
+      operations.length === 0 && 
+      currentGates.length === 0
+    ) {
+      const ops = externalCircuit.map((gate, idx) => {
+        const gateName = typeof gate === 'string' ? gate : (typeof gate === 'object' ? gate.gate : String(gate))
+        return new CircuitOperation(gateName, [0])
+      })
+      setOperations(ops)
     }
   }, [externalCircuit])
 

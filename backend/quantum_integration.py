@@ -611,7 +611,7 @@ def share_circuit(request: ShareRequest) -> ShareResponse:
         SHARED_CIRCUITS[share_id] = circuit_data
         
         # Generate share URL (would be full URL in production)
-        share_url = f"/shared/{share_id}"
+        share_url = f"/circuit/{share_id}"
         
         return ShareResponse(
             success=True,

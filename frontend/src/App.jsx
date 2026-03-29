@@ -279,6 +279,8 @@ const App = () => {
                 <OnboardingProvider>
                   <Routes>
                       <Route path="/" element={<LandingPage />} />
+                      <Route path="/circuit/:shareId" element={<SharedCircuitPage />} />
+                      <Route path="/shared/:shareId" element={<SharedCircuitPage />} />
                       <Route element={<AppContent />}>
                         <Route path="/dashboard" element={<HomePage />} />
                         <Route path="/qubits" element={<QubitsPage />} />
@@ -288,7 +290,6 @@ const App = () => {
                         <Route path="/challenge/:challengeId" element={<ChallengePage />} />
                         <Route path="/error-playground" element={<QuantumErrorPlayground />} />
                         <Route path="/quantum-lab" element={<QuantumLabPage />} />
-                        <Route path="/circuit/:shareId" element={<SharedCircuitPage />} />
                       <Route path="/tutorial" element={<TutorialPage />} />
                       </Route>
                     </Routes>

@@ -6,7 +6,7 @@ An AI-powered interactive quantum computing learning platform with 3D visualizat
 
 - **Quantum OS Boot Sequence**: Animated portal boot sequence with system initialization
 - **Interactive Qubit Viewer**: 3D Bloch sphere visualization with real-time controls
-- **Visual Circuit Builder**: Drag-and-drop quantum circuit editor
+- **Visual Circuit Builder**: Drag-and-drop quantum circuit editor with export to Qiskit, Cirq, Q#, PennyLane, Forest (Rigetti), and OpenQASM
 - **Gate Library**: Comprehensive library of quantum gates with visualizations
 - **Algorithm Playground**: Interactive quantum algorithm demonstrations
 - **Quantum Error Lab**: Explore quantum errors, decoherence, and noise effects
@@ -130,6 +130,7 @@ Quantara/
 │   │   │   │   └── ...
 │   │   │   ├── AlgorithmPlayground.jsx
 │   │   │   ├── ChallengePlayground.jsx
+│   │   │   ├── CircuitActions.jsx
 │   │   │   ├── CircuitBuilder.jsx
 │   │   │   ├── GateLibrary.jsx
 │   │   │   ├── GlobalSearchModal.jsx
@@ -212,7 +213,7 @@ Quantara/
 The sidebar provides access to:
 - **Dashboard** - Command center with system status
 - **Qubits** - Interactive Bloch sphere visualization
-- **Circuits** - Visual quantum circuit builder
+- **Circuits** - Visual quantum circuit builder with export/share functionality (Qiskit, Cirq, Q#, PennyLane, Forest, OpenQASM)
 - **Algorithms** - Algorithm playground
 - **Gate Library** - Comprehensive gate reference
 - **Error Lab** - Quantum error exploration
