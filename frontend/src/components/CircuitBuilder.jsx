@@ -238,22 +238,30 @@ const CircuitBuilder = ({
       const response = await fetch('/api/quantum/simulate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gates: gateList, num_qubits: numQubits, shots: 1000 })
+        body: JSON.stringify({ 
+          circuit: gateList,
+          noise_enabled: false,
+          noise_level: 0.0
+        })
       })
       
       if (response.ok) {
         const data = await response.json()
-        if (data.success) {
-          setSimulationResults(data)
-          // Pass results to parent callback for Noise Playground to handle
+        // Backend returns SimulateResponse directly (no 'success' wrapper)
+        if (data.probabilities) {
+          setSimulationResults({
+            circuit: data.circuit || gateList,
+            probabilities: data.probabilities,
+            noise_enabled: data.noise_enabled || false,
+            noise_level: data.noise_level || 0,
+            shots: data.shots || 1000
+          })
           if (onRunSimulation) {
-            // Format data for parent component
-            const formattedData = {
+            onRunSimulation({
               circuit: gateList,
               probabilities: data.probabilities || {},
               shots: data.shots || 1000
-            }
-            onRunSimulation(formattedData)
+            })
           }
         } else {
           const mockResults = generateMockResults(operations, numQubits)
@@ -443,7 +451,77 @@ const CircuitBuilder = ({
         )}
       </div>
 
-      {/* Simulation Results - Pass to parent for display */}
+      {/* Simulation Results Display */}
+      {simulationResults && (
+        <div style={{
+          marginTop: '24px',
+          padding: '20px',
+          background: 'rgba(0, 212, 255, 0.05)',
+          borderRadius: '12px',
+          border: '1px solid rgba(0, 212, 255, 0.2)'
+        }}>
+          <h4 style={{ color: '#00d4ff', marginBottom: '16px', fontSize: '16px', fontFamily: 'Orbitron, sans-serif' }}>
+            Simulation Results
+          </h4>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px' }}>
+            {Object.entries(simulationResults.probabilities || {}).map(([state, prob]) => {
+              const percent = parseFloat(prob) * 100
+              return (
+                <div key={state} style={{
+                  padding: '16px',
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  borderRadius: '12px',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ color: '#fff', fontSize: '18px', fontWeight: 'bold', fontFamily: 'monospace', marginBottom: '12px' }}>
+                    |{state}⟩
+                  </div>
+                  {/* Progress bar container */}
+                  <div style={{
+                    width: '100%',
+                    height: '28px',
+                    background: 'rgba(0, 0, 0, 0.5)',
+                    borderRadius: '6px',
+                    overflow: 'hidden',
+                    border: '1px solid rgba(0, 212, 255, 0.3)',
+                    position: 'relative'
+                  }}>
+                    {/* Filled portion */}
+                    <div style={{
+                      width: `${percent}%`,
+                      height: '100%',
+                      background: 'linear-gradient(90deg, #00d4ff, #00ff88)',
+                      borderRadius: '5px',
+                      transition: 'width 0.8s ease-out',
+                      boxShadow: '0 0 10px rgba(0, 212, 255, 0.5)'
+                    }} />
+                    {/* Percentage text overlay */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      color: '#fff',
+                      fontSize: '12px',
+                      fontWeight: 'bold',
+                      textShadow: '0 0 4px rgba(0,0,0,0.8)'
+                    }}>
+                      {percent.toFixed(1)}%
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+          {simulationResults.shots && (
+            <p style={{ color: '#8a8a9a', fontSize: '12px', marginTop: '12px' }}>
+              Based on {simulationResults.shots} measurement shots
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Legacy: Pass to parent callback */}
       {simulationResults && onRunSimulation && (
         <div style={{ display: 'none' }} data-simulation-results={JSON.stringify(simulationResults)} />
       )}
