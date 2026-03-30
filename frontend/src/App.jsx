@@ -21,6 +21,7 @@ import GlobalSearchModal from './components/GlobalSearchModal'
 import PortalBoot from './components/PortalBoot'
 import { OnboardingProvider } from './components/OnboardingTutorial'
 import TutorialPage from './pages/TutorialPage'
+import ErrorBoundary from './components/ErrorBoundary'
 
 // Lazy load heavy components for better performance
 const TutorPanel = lazy(() => import('./components/TutorPanel'))
@@ -276,28 +277,35 @@ const App = () => {
             <AIMessageProvider>
               <GamificationProvider>
                 <OnboardingProvider>
-                  <Routes>
-                      <Route path="/" element={<LandingPage />} />
-                      <Route path="/circuit/:shareId" element={<SharedCircuitPage />} />
-                      <Route path="/shared/:shareId" element={<SharedCircuitPage />} />
-                      <Route element={<AppContent />}>
-                        <Route path="/dashboard" element={<HomePage />} />
-                        <Route path="/qubits" element={<QubitsPage />} />
-                        <Route path="/circuits" element={<CircuitsPage />} />
-                        <Route path="/algorithms" element={<AlgorithmsPage />} />
-                        <Route path="/gate-library" element={<GateLibraryPage />} />
-                        <Route path="/challenge/:challengeId" element={<ChallengePage />} />
-                        <Route path="/error-playground" element={<QuantumErrorPlayground />} />
-                      <Route path="/tutorial" element={<TutorialPage />} />
-                      </Route>
-                    </Routes>
-                  </OnboardingProvider>
-                </GamificationProvider>
-              </AIMessageProvider>
-            </AuthProvider>
-          </AccessibilityProvider>
-        </BrowserRouter>
-      </>
+                  <ErrorBoundary
+                    title="Something went wrong"
+                    message="An error occurred while loading the application. Please try again."
+                  >
+                    <Suspense fallback={<RouteLoader />}>
+                      <Routes>
+                        <Route path="/" element={<LandingPage />} />
+                        <Route path="/circuit/:shareId" element={<SharedCircuitPage />} />
+                        <Route path="/shared/:shareId" element={<SharedCircuitPage />} />
+                        <Route element={<AppContent />}>
+                          <Route path="/dashboard" element={<HomePage />} />
+                          <Route path="/qubits" element={<QubitsPage />} />
+                          <Route path="/circuits" element={<CircuitsPage />} />
+                          <Route path="/algorithms" element={<AlgorithmsPage />} />
+                          <Route path="/gate-library" element={<GateLibraryPage />} />
+                          <Route path="/challenge/:challengeId" element={<ChallengePage />} />
+                          <Route path="/error-playground" element={<QuantumErrorPlayground />} />
+                          <Route path="/tutorial" element={<TutorialPage />} />
+                        </Route>
+                      </Routes>
+                    </Suspense>
+                  </ErrorBoundary>
+                </OnboardingProvider>
+              </GamificationProvider>
+            </AIMessageProvider>
+          </AuthProvider>
+        </AccessibilityProvider>
+      </BrowserRouter>
+    </>
   )
 }
 

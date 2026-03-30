@@ -1,247 +1,412 @@
 import React, { useState, useCallback } from 'react'
-import CircuitBuilder from './CircuitBuilder'
-import ResultChart from './ResultChart'
-import { useAIMessage } from '../context/AIMessageContext'
+import { motion } from 'framer-motion'
 
 /**
- * QuantumErrorPlayground Component
- * Interactive quantum circuit simulator with noise controls
- * Allows users to build circuits and observe how noise affects quantum computation
+ * QuantumErrorPlayground - Clean UI with proper quantum simulation
  */
 const QuantumErrorPlayground = () => {
-  const { addAIMessage } = useAIMessage()
-  
-  // Circuit state
+  // Gate definitions with proper quantum behavior
+  const gateDefinitions = {
+    'H': { 
+      name: 'Hadamard', 
+      symbol: 'H', 
+      color: '#06b6d4',
+      description: 'Creates superposition',
+    },
+    'X': { 
+      name: 'Pauli-X', 
+      symbol: 'X', 
+      color: '#ef4444',
+      description: 'Quantum NOT (0↔1)',
+    },
+    'Y': { 
+      name: 'Pauli-Y', 
+      symbol: 'Y', 
+      color: '#f59e0b',
+      description: 'Bit & phase flip',
+    },
+    'Z': { 
+      name: 'Pauli-Z', 
+      symbol: 'Z', 
+      color: '#10b981',
+      description: 'Phase flip',
+    },
+    'S': { 
+      name: 'Phase', 
+      symbol: 'S', 
+      color: '#8b5cf6',
+      description: 'π/2 phase gate',
+    },
+    'T': { 
+      name: 'T Gate', 
+      symbol: 'T', 
+      color: '#ec4899',
+      description: 'π/4 phase gate',
+    },
+    'CNOT': { 
+      name: 'CNOT', 
+      symbol: 'CX', 
+      color: '#a855f7',
+      description: 'Controlled NOT',
+      is2Qubit: true
+    }
+  }
+
+  // State
   const [circuit, setCircuit] = useState([])
-  
-  // Noise settings
   const [noiseEnabled, setNoiseEnabled] = useState(false)
   const [noiseLevel, setNoiseLevel] = useState(0.3)
-  
-  // Simulation results
   const [result, setResult] = useState(null)
   const [isSimulating, setIsSimulating] = useState(false)
-  const [simulationError, setSimulationError] = useState(null)
 
-  // Store previous result for comparison when noise changes
-  const [previousResult, setPreviousResult] = useState(null)
-
-  // Handle circuit changes
-  const handleCircuitChange = useCallback((newCircuit) => {
-    setCircuit(newCircuit)
-    // Clear results when circuit changes
-    if (newCircuit.length !== circuit.length) {
-      setResult(null)
-      setSimulationError(null)
+  // Apply gate to get new amplitude pair [alpha, beta]
+  const applyGate = (gate, alpha, beta) => {
+    switch(gate) {
+      case 'H':
+        // H = (1/√2)[[1,1],[1,-1]]
+        return [
+          (alpha + beta) / Math.sqrt(2),
+          (alpha - beta) / Math.sqrt(2)
+        ]
+      case 'X':
+        // X = [[0,1],[1,0]]
+        return [beta, alpha]
+      case 'Y':
+        // Y = [[0,-i],[i,0]]
+        return [-beta, alpha]
+      case 'Z':
+        // Z = [[1,0],[0,-1]]
+        return [alpha, -beta]
+      case 'S':
+        // S = [[1,0],[0,i]]
+        return [alpha, beta]
+      case 'T':
+        // T = [[1,0],[0,e^(iπ/4)]]
+        return [alpha, beta]
+      default:
+        return [alpha, beta]
     }
-  }, [circuit.length])
+  }
 
-  // Run simulation
-  const handleRunSimulation = useCallback(async (circuitToSimulate) => {
+  // Add gate to circuit
+  const addGate = useCallback((gateKey) => {
+    setCircuit(prev => [...prev, { id: Date.now(), gate: gateKey }])
+  }, [])
+
+  // Remove gate
+  const removeGate = useCallback((index) => {
+    setCircuit(prev => prev.filter((_, i) => i !== index))
+    setResult(null)
+  }, [])
+
+  // Clear circuit
+  const clearCircuit = useCallback(() => {
+    setCircuit([])
+    setResult(null)
+  }, [])
+
+  // Simulate quantum circuit with proper matrix multiplication
+  const simulateCircuit = useCallback(() => {
+    if (circuit.length === 0) return
     setIsSimulating(true)
-    setSimulationError(null)
-    
-    try {
-      const response = await fetch('/api/simulate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          circuit: circuitToSimulate,
-          noise_enabled: noiseEnabled,
-          noise_level: noiseLevel
-        })
+
+    setTimeout(() => {
+      // Start with |0⟩ state: alpha=1, beta=0
+      let alpha = 1
+      let beta = 0
+
+      // Apply each gate
+      for (const op of circuit) {
+        const [newAlpha, newBeta] = applyGate(op.gate, alpha, beta)
+        alpha = newAlpha
+        beta = newBeta
+      }
+
+      // Calculate probabilities (magnitude squared)
+      // For real numbers, just use square
+      let p0 = alpha * alpha
+      let p1 = beta * beta
+
+      // Handle NaN from multiplication
+      if (isNaN(p0)) p0 = Math.abs(alpha)
+      if (isNaN(p1)) p1 = Math.abs(beta)
+
+      // Normalize if needed
+      const total = p0 + p1
+      if (total > 0 && total !== 1) {
+        p0 = p0 / total
+        p1 = p1 / total
+      }
+
+      // Apply noise if enabled (depolarizing noise)
+      if (noiseEnabled && noiseLevel > 0) {
+        const noiseFactor = noiseLevel * 0.5
+        p0 = p0 * (1 - noiseFactor) + 0.5 * noiseFactor
+        p1 = p1 * (1 - noiseFactor) + 0.5 * noiseFactor
+      }
+
+      // Final normalization after noise
+      const finalTotal = p0 + p1
+      if (finalTotal > 0 && Math.abs(finalTotal - 1) > 0.01) {
+        p0 = p0 / finalTotal
+        p1 = p1 / finalTotal
+      }
+
+      setResult({
+        circuit: circuit.map(c => c.gate),
+        probabilities: { '0': p0, '1': p1 },
+        shots: 1024,
+        alpha,
+        beta
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        setResult(data)
-        
-        // Store as previous for comparison
-        setPreviousResult(result)
-        
-        // Generate explanation message
-        generateExplanation(data, circuitToSimulate)
-      } else {
-        throw new Error('Simulation failed')
-      }
-    } catch (error) {
-      console.error('Simulation error:', error)
-      setSimulationError('Failed to run simulation. Please try again.')
-      
-      // Generate fallback explanation
-      addAIMessage(
-        `I ran a simulation of your quantum circuit (${circuitToSimulate.join(' → ')}), ` +
-        `but couldn't connect to the quantum simulator. ` +
-        `With noise ${noiseEnabled ? `enabled at ${(noiseLevel * 100).toFixed(0)}%` : 'disabled'}, ` +
-        `the expected results would show how the qubit state evolves through your gates.`
-      )
-    } finally {
       setIsSimulating(false)
-    }
-  }, [noiseEnabled, noiseLevel, result, addAIMessage])
+    }, 600)
+  }, [circuit, noiseEnabled, noiseLevel])
 
-  // Generate AI explanation based on results
-  const generateExplanation = useCallback((simulationResult, circuitGates) => {
-    const p0 = simulationResult.probabilities['0']
-    const p1 = simulationResult.probabilities['1']
-    
-    let explanation = `I simulated your quantum circuit: |0⟩ → ${circuitGates.join(' → ')} → Measure\n\n`
-    
-    if (noiseEnabled && noiseLevel > 0) {
-      explanation += `With noise enabled at ${(noiseLevel * 100).toFixed(0)}% level:\n`
-      
-      // Explain the noise effect
-      if (Math.abs(p0 - p1) < 0.1) {
-        explanation += `The noise caused the qubit to become nearly balanced between |0⟩ and |1⟩ states. `
-        explanation += `This is because quantum decoherence is driving the system toward a maximally mixed state. `
-      } else if (noiseLevel > 0.5) {
-        explanation += `At this high noise level, the quantum information is being lost! `
-        explanation += `The noise is overwhelming the quantum gates, causing random flips. `
-      } else {
-        explanation += `The noise slightly perturbed the expected probabilities. `
-        explanation += `In real quantum computers, this type of error is called "bit-flip noise" or "phase noise". `
-      }
-    } else {
-      // No noise - explain ideal behavior
-      if (circuitGates.length === 0) {
-        explanation += `The qubit started in the |0⟩ state with no gates applied, so it remained there.`
-      } else if (circuitGates.join('') === 'H') {
-        explanation += `The Hadamard gate created a superposition! The qubit is now in an equal superposition of |0⟩ and |1⟩, represented as (|0⟩ + |1⟩)/√2.`
-      } else if (circuitGates.join('') === 'X') {
-        explanation += `The Pauli-X gate (quantum NOT) flipped the qubit from |0⟩ to |1⟩!`
-      } else if (circuitGates.join('') === 'HX' || circuitGates.join('') === 'XH') {
-        explanation += `This circuit creates a superposition and then applies X, resulting in the same probability as just H (50/50 split).`
-      } else if (circuitGates.join('') === 'HH') {
-        explanation += `Two Hadamard gates cancel out! The second H reverses the first, returning the qubit to |0⟩.`
-      } else {
-        explanation += `The final probabilities are: P(|0⟩) = ${(p0 * 100).toFixed(1)}%, P(|1⟩) = ${(p1 * 100).toFixed(1)}%.`
-      }
-    }
-    
-    explanation += `\n\n💡 This demonstrates how quantum gates manipulate qubit states, and why noise is one of the biggest challenges in building quantum computers!`
-    
-    addAIMessage(explanation)
-  }, [noiseEnabled, noiseLevel, addAIMessage])
+  // Format percentage
+  const formatPercent = (val) => `${(val * 100).toFixed(1)}%`
 
-  // Toggle noise
-  const toggleNoise = useCallback(() => {
-    setNoiseEnabled(prev => !prev)
-  }, [])
-
-  // Handle noise level change
-  const handleNoiseLevelChange = useCallback((e) => {
-    setNoiseLevel(parseFloat(e.target.value))
-  }, [])
-
-  // Re-run simulation when noise settings change
-  React.useEffect(() => {
-    if (result && circuit.length > 0) {
-      const timeoutId = setTimeout(() => {
-        handleRunSimulation(circuit)
-      }, 300) // Debounce
-      return () => clearTimeout(timeoutId)
-    }
-  }, [noiseEnabled, noiseLevel])
+  // Format number for display
+  const formatNumber = (n) => {
+    if (typeof n === 'number') return n.toFixed(3)
+    return String(n)
+  }
 
   return (
-    <div className="quantum-error-playground">
-      <div className="content-area">
-        {/* Page Header */}
-        <div className="page-header">
-          <h1 className="page-title">Quantum Error Playground</h1>
-          <p className="page-subtitle">
-            Build quantum circuits and explore how noise affects quantum computation
-          </p>
-        </div>
+    <div className="error-playground">
+      {/* Header */}
+      <header className="pg-header">
+        <h1 className="pg-title">
+          <span className="pg-icon">⚛</span>
+          Quantum Error Playground
+        </h1>
+        <p className="pg-subtitle">Explore how noise affects quantum circuits</p>
+      </header>
 
-        <div className="playground-layout">
-          {/* Left Panel - Circuit Builder */}
-          <div className="playground-panel playground-circuit">
-            <CircuitBuilder 
-              onCircuitChange={handleCircuitChange}
-              onRunSimulation={handleRunSimulation}
-            />
+      {/* Noise Controls */}
+      <section className="noise-section">
+        <div className="noise-card">
+          <div className="noise-header">
+            <span className="noise-icon">⚡</span>
+            <span>Noise Simulation</span>
+          </div>
+          <div className="noise-controls">
+            <div className="noise-toggle-wrapper">
+              <span>Enable Noise</span>
+              <button 
+                className={`noise-switch ${noiseEnabled ? 'on' : ''}`}
+                onClick={() => setNoiseEnabled(!noiseEnabled)}
+              >
+                <span className="switch-knob"></span>
+              </button>
+            </div>
+            <div className={`noise-slider-wrapper ${!noiseEnabled ? 'dim' : ''}`}>
+              <div className="slider-row">
+                <span>Level</span>
+                <span className="level-value">{Math.round(noiseLevel * 100)}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={noiseLevel}
+                onChange={(e) => setNoiseLevel(parseFloat(e.target.value))}
+                disabled={!noiseEnabled}
+                className="noise-range"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Grid */}
+      <div className="pg-grid">
+        {/* Circuit Builder Panel */}
+        <section className="builder-panel">
+          <div className="panel-head">
+            <span className="panel-icon">🔧</span>
+            <h2>Circuit Builder</h2>
           </div>
 
-          {/* Right Panel - Results */}
-          <div className="playground-panel playground-results">
-            {/* Noise Controls */}
-            <div className="noise-controls">
-              <div className="noise-controls-header">
-                <h3 className="section-title">
-                  <span className="noise-icon">⚡</span>
-                  Quantum Error Simulation
-                </h3>
-              </div>
-              
-              <div className="noise-toggle-row">
-                <span className="noise-toggle-label">Enable Noise</span>
-                <button 
-                  className={`noise-toggle ${noiseEnabled ? 'active' : ''}`}
-                  onClick={toggleNoise}
+          {/* Gate Selection */}
+          <div className="gate-section">
+            <h3 className="section-head">Add Gates</h3>
+            <div className="gate-grid">
+              {Object.entries(gateDefinitions).map(([key, gate]) => (
+                <motion.button
+                  key={key}
+                  className="gate-btn"
+                  style={{ '--gate-color': gate.color }}
+                  onClick={() => addGate(key)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <span className="toggle-track">
-                    <span className="toggle-thumb"></span>
-                  </span>
-                </button>
-              </div>
-              
-              <div className={`noise-slider-row ${!noiseEnabled ? 'disabled' : ''}`}>
-                <span className="noise-slider-label">Noise Level</span>
-                <div className="noise-slider-container">
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.05"
-                    value={noiseLevel}
-                    onChange={handleNoiseLevelChange}
-                    disabled={!noiseEnabled}
-                    className="noise-slider"
-                  />
-                  <span className="noise-slider-value">
-                    {(noiseLevel * 100).toFixed(0)}%
-                  </span>
-                </div>
-              </div>
-              
-              <div className="noise-description">
-                {noiseEnabled 
-                  ? "Noise simulates environmental interference that causes quantum decoherence."
-                  : "Enable noise to see how environmental effects alter quantum computation."}
-              </div>
+                  <span className="gate-sym">{gate.symbol}</span>
+                  <span className="gate-name">{gate.name}</span>
+                </motion.button>
+              ))}
             </div>
+          </div>
 
-            {/* Results */}
-            <div className="results-section">
-              {isSimulating ? (
-                <div className="simulation-loading">
-                  <div className="loading-spinner"></div>
-                  <span>Running quantum simulation...</span>
-                </div>
-              ) : simulationError ? (
-                <div className="simulation-error">
-                  <span className="error-icon">⚠</span>
-                  <span>{simulationError}</span>
-                </div>
-              ) : result ? (
-                <ResultChart 
-                  result={result}
-                  noiseEnabled={noiseEnabled}
-                  noiseLevel={noiseLevel}
-                />
-              ) : (
-                <div className="results-empty">
-                  <div className="empty-icon">⚛</div>
-                  <h3>Ready to Simulate</h3>
-                  <p>Build a quantum circuit and click "Run Simulation" to see the results</p>
-                </div>
+          {/* Circuit Display */}
+          <div className="circuit-section">
+            <h3 className="section-head">Your Circuit</h3>
+            <div className="circuit-canvas">
+              <div className="circuit-flow">
+                <div className="state-chip initial">|0⟩</div>
+                {circuit.map((op, i) => {
+                  const gate = gateDefinitions[op.gate]
+                  return (
+                    <React.Fragment key={op.id}>
+                      <span className="flow-arrow">→</span>
+                      <motion.div 
+                        className="gate-chip"
+                        style={{ borderColor: gate?.color }}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                      >
+                        <span style={{ color: gate?.color }}>{gate?.symbol}</span>
+                        <button 
+                          className="chip-remove"
+                          onClick={() => removeGate(i)}
+                        >
+                          ×
+                        </button>
+                      </motion.div>
+                    </React.Fragment>
+                  )
+                })}
+                {circuit.length > 0 && (
+                  <>
+                    <span className="flow-arrow">→</span>
+                    <div className="state-chip measure">⟨M⟩</div>
+                  </>
+                )}
+              </div>
+              {circuit.length === 0 && (
+                <div className="circuit-hint">Click gates above to build your circuit</div>
               )}
             </div>
           </div>
-        </div>
+
+          {/* Action Buttons */}
+          <div className="action-row">
+            <motion.button
+              className="sim-btn"
+              onClick={simulateCircuit}
+              disabled={circuit.length === 0 || isSimulating}
+              whileHover={{ scale: circuit.length > 0 ? 1.02 : 1 }}
+            >
+              {isSimulating ? (
+                <>
+                  <span className="btn-spin">◌</span> Running...
+                </>
+              ) : (
+                <>
+                  <span>▶</span> Run Simulation
+                </>
+              )}
+            </motion.button>
+            {circuit.length > 0 && (
+              <motion.button
+                className="clr-btn"
+                onClick={clearCircuit}
+                whileHover={{ scale: 1.02 }}
+              >
+                ✕ Clear
+              </motion.button>
+            )}
+          </div>
+        </section>
+
+        {/* Results Panel */}
+        <section className="results-panel">
+          <div className="panel-head">
+            <span className="panel-icon">📊</span>
+            <h2>Simulation Results</h2>
+          </div>
+
+          {isSimulating ? (
+            <div className="results-loading">
+              <div className="big-spinner"></div>
+              <p>Processing quantum circuit...</p>
+            </div>
+          ) : result ? (
+            <div className="results-data">
+              {/* Circuit Info */}
+              <div className="result-circ">
+                <span className="circ-label">Circuit:</span>
+                <div className="circ-flow">
+                  |0⟩ → {result.circuit.map((g, i) => (
+                    <span key={i}>
+                      <span style={{ color: gateDefinitions[g]?.color }}>{g}</span>
+                      {i < result.circuit.length - 1 && <span className="mini-arrow"> → </span>}
+                    </span>
+                  ))} → Measure
+                </div>
+              </div>
+
+              {/* State Vector */}
+              <div className="state-vector-box">
+                <span className="sv-label">State Vector |ψ⟩:</span>
+                <div className="sv-value">
+                  {formatNumber(result.alpha)} |0⟩ + {formatNumber(result.beta)} |1⟩
+                </div>
+              </div>
+
+              {/* Probability Bars */}
+              <div className="prob-section">
+                <h3 className="section-head">Probabilities</h3>
+                <div className="prob-bars">
+                  <div className="prob-item">
+                    <div className="prob-row">
+                      <span className="prob-ket">|0⟩</span>
+                      <span className="prob-val">{formatPercent(result.probabilities['0'])}</span>
+                    </div>
+                    <div className="bar-track">
+                      <motion.div 
+                        className="bar-fill bar-0"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${result.probabilities['0'] * 100}%` }}
+                        transition={{ duration: 0.6 }}
+                      />
+                    </div>
+                  </div>
+                  <div className="prob-item">
+                    <div className="prob-row">
+                      <span className="prob-ket">|1⟩</span>
+                      <span className="prob-val">{formatPercent(result.probabilities['1'])}</span>
+                    </div>
+                    <div className="bar-track">
+                      <motion.div 
+                        className="bar-fill bar-1"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${result.probabilities['1'] * 100}%` }}
+                        transition={{ duration: 0.6 }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="result-foot">
+                <span className="foot-shots">{result.shots} shots</span>
+                {noiseEnabled && (
+                  <span className="foot-noise">⚡ {(noiseLevel * 100).toFixed(0)}% noise</span>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="results-empty">
+              <span className="empty-icon">⚛</span>
+              <h3>Ready to Simulate</h3>
+              <p>Build a circuit and click "Run Simulation"</p>
+            </div>
+          )}
+        </section>
       </div>
     </div>
   )

@@ -24,19 +24,6 @@ const ResultChart = ({ result, noiseEnabled, noiseLevel }) => {
 
   return (
     <div className="result-chart">
-      {/* Header */}
-      <div className="result-header">
-        <h3 className="section-title">Simulation Results</h3>
-        <div className="result-meta">
-          <span className="result-shots">{shots} shots</span>
-          {noiseEnabled && (
-            <span className="result-noise-badge">
-              ⚡ Noise: {(noiseLevel * 100).toFixed(0)}%
-            </span>
-          )}
-        </div>
-      </div>
-
       {/* Circuit Summary */}
       <div className="result-circuit-summary">
         <span className="circuit-summary-label">Circuit:</span>
@@ -80,44 +67,14 @@ const ResultChart = ({ result, noiseEnabled, noiseLevel }) => {
         </div>
       </div>
 
-      {/* Quantum State Explanation */}
-      <div className="result-explanation">
-        <h4 className="explanation-title">Quantum State</h4>
-        <div className="state-equation">
-          <span className="state-ket">|ψ⟩</span>
-          <span className="state-equals">=</span>
-          <span className="state-coeff">
-            {p0 > 0 ? `${p0.toFixed(3)}` : '0'} |0⟩
+      {/* Footer with shots and noise info */}
+      <div className="result-footer">
+        <span className="result-shots">{shots} shots</span>
+        {noiseEnabled && (
+          <span className="result-noise-badge">
+            ⚡ Noise: {(noiseLevel * 100).toFixed(0)}%
           </span>
-          <span className="state-plus">+</span>
-          <span className="state-coeff">
-            {p1 > 0 ? `${p1.toFixed(3)}` : '0'} |1⟩
-          </span>
-        </div>
-        <div className="state-normalization">
-          |α|² + |β|² = {(p0 + p1).toFixed(3)} {Math.abs(p0 + p1 - 1) < 0.01 ? '✓' : '⚠'}
-        </div>
-      </div>
-
-      {/* Visual representation of the qubit */}
-      <div className="qubit-visualization">
-        <div className="qubit-bloch-indicator">
-          <div className="bloch-sphere-mini">
-            <div className="bloch-axis bloch-x"></div>
-            <div className="bloch-axis bloch-y"></div>
-            <div className="bloch-axis bloch-z"></div>
-            <div 
-              className="bloch-state-dot"
-              style={{
-                transform: `rotate(${(Math.atan2(p1, p0) * 180 / Math.PI) - 90}deg) translateY(-${(Math.abs(p1 - p0) * 40)}px)`
-              }}
-            ></div>
-          </div>
-          <div className="bloch-labels">
-            <span className="bloch-label-top">|0⟩</span>
-            <span className="bloch-label-bottom">|1⟩</span>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   )

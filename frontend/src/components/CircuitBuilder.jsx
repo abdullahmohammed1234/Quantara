@@ -119,7 +119,7 @@ const CircuitBuilder = ({
   designId = null,
   autosaveEnabled = true,
   initialQubits = 2,
-  showVisualization = true
+  showVisualization = false
 }) => {
   const [operations, setOperations] = useState([])
   const [numQubits, setNumQubits] = useState(initialQubits)
@@ -245,19 +245,52 @@ const CircuitBuilder = ({
         const data = await response.json()
         if (data.success) {
           setSimulationResults(data)
-          onRunSimulation?.(data)
+          // Pass results to parent callback for Noise Playground to handle
+          if (onRunSimulation) {
+            // Format data for parent component
+            const formattedData = {
+              circuit: gateList,
+              probabilities: data.probabilities || {},
+              shots: data.shots || 1000
+            }
+            onRunSimulation(formattedData)
+          }
         } else {
           const mockResults = generateMockResults(operations, numQubits)
           setSimulationResults(mockResults)
+          if (onRunSimulation) {
+            const formattedData = {
+              circuit: gateList,
+              probabilities: mockResults.probabilities || {},
+              shots: mockResults.shots || 1000
+            }
+            onRunSimulation(formattedData)
+          }
           toastManager.info('Using simulated results')
         }
       } else {
         const mockResults = generateMockResults(operations, numQubits)
         setSimulationResults(mockResults)
+        if (onRunSimulation) {
+          const formattedData = {
+            circuit: gateList,
+            probabilities: mockResults.probabilities || {},
+            shots: mockResults.shots || 1000
+          }
+          onRunSimulation(formattedData)
+        }
       }
     } catch (error) {
       const mockResults = generateMockResults(operations, numQubits)
       setSimulationResults(mockResults)
+      if (onRunSimulation) {
+        const formattedData = {
+          circuit: gateList,
+          probabilities: mockResults.probabilities || {},
+          shots: mockResults.shots || 1000
+        }
+        onRunSimulation(formattedData)
+      }
     } finally {
       setIsRunning(false)
     }
@@ -410,29 +443,9 @@ const CircuitBuilder = ({
         )}
       </div>
 
-      {/* Simulation Results */}
-      {simulationResults && (
-        <motion.div className="results-card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h4 className="results-title"><span>✓</span> Simulation Results{simulationResults.mock && <span className="mock-badge">(Simulated)</span>}</h4>
-          <div className="results-bars">
-            {Object.entries(simulationResults.counts || simulationResults.probabilities || {}).sort((a, b) => b[1] - a[1]).slice(0, Math.min(8, Math.pow(2, numQubits))).map(([state, value], idx) => (
-              <div key={state} className="result-row">
-                <span className="state-label">|{state}⟩:</span>
-                <div className="prob-bar">
-                  <motion.div className={`bar-fill ${idx === 0 ? 'primary' : ''}`} initial={{ width: 0 }} animate={{ width: `${(value / (simulationResults.shots || 1)) * 100}%` }} transition={{ duration: 0.8, ease: 'easeOut' }} />
-                </div>
-                <span className="prob-value">{((value / (simulationResults.shots || 1)) * 100).toFixed(1)}%</span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {/* Quantum Visualization */}
-      {showVisualization && (
-        <div style={{ marginTop: '24px' }}>
-          <QuantumVisualization numQubits={numQubits} gateOperations={gateOperationsForViz} isPlaying={!isRunning} />
-        </div>
+      {/* Simulation Results - Pass to parent for display */}
+      {simulationResults && onRunSimulation && (
+        <div style={{ display: 'none' }} data-simulation-results={JSON.stringify(simulationResults)} />
       )}
 
       {/* Parameter Modal */}
