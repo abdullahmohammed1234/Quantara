@@ -53,13 +53,4 @@ export const ErrorPlaygroundPage = () => (
   />
 )
 
-// Quantum Lab Page
-export const QuantumLabPage = () => (
-  <PlaceholderPage 
-    title="Quantum Lab" 
-    icon="⚗"
-    description="Run quantum experiments and algorithms"
-  />
-)
-
 export default PlaceholderPage

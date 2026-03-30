@@ -50,11 +50,6 @@ const CONTEXT_HINTS = {
     "How does decoherence affect qubits?",
     "What is quantum error correction?"
   ],
-  '/quantum-lab': [
-    "How to run a quantum simulation?",
-    "What gates can I use in the lab?",
-    "How to interpret measurement results?"
-  ],
   '/progress': [
     "How is my progress tracked?",
     "What quantum concepts have I learned?",

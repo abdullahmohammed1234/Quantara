@@ -381,12 +381,20 @@ async def simulate_circuit(request: SimulateRequest):
         
         # Calculate probabilities
         total_shots = sum(counts.values())
+        p0 = counts.get("0", 0) / total_shots
+        p1 = counts.get("1", 0) / total_shots
+        
+        # Ensure probabilities always sum to 1 (normalize any floating point errors)
+        total = p0 + p1
+        if total > 0 and abs(total - 1.0) > 1e-10:
+            p0, p1 = p0 / total, p1 / total
+        
         probabilities = {
-            "0": round(counts.get("0", 0) / total_shots, 4),
-            "1": round(counts.get("1", 0) / total_shots, 4)
+            "0": round(p0, 4),
+            "1": round(p1, 4)
         }
         
-        print(f"Simulation complete: circuit={request.circuit}, probs={probabilities}")
+        print(f"Simulation complete: circuit={request.circuit}, probs={probabilities}, sum={p0+p1}")
         
         return SimulateResponse(
             circuit=request.circuit,
@@ -461,6 +469,11 @@ def simulate_fallback(circuit: List[str], noise_enabled: bool = False,
         noise_factor = noise_level
         p0 = p0 * (1 - noise_factor) + 0.5 * noise_factor
         p1 = p1 * (1 - noise_factor) + 0.5 * noise_factor
+    
+    # Ensure probabilities always sum to 1 (normalize any floating point errors)
+    total = p0 + p1
+    if total > 0 and abs(total - 1.0) > 1e-10:
+        p0, p1 = p0 / total, p1 / total
     
     return SimulateResponse(
         circuit=circuit,

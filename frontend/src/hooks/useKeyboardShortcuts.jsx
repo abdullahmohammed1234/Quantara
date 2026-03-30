@@ -17,7 +17,6 @@ const SHORTCUTS = {
   'g p': { action: 'navigate', path: '/progress', description: 'Go to Progress' },
   'g s': { action: 'navigate', path: '/games', description: 'Go to Games' },
   'g e': { action: 'navigate', path: '/error-playground', description: 'Go to Error Lab' },
-  'g l': { action: 'navigate', path: '/quantum-lab', description: 'Go to Quantum Lab' },
   
   // Actions
   '?': { action: 'showHelp', description: 'Show keyboard shortcuts' },
@@ -34,7 +33,6 @@ const JUMP_MENU_ITEMS = [
   { path: '/algorithms', label: 'Algorithms', icon: '🧠' },
   { path: '/gate-library', label: 'Gate Library', icon: '📚' },
   { path: '/error-playground', label: 'Error Lab', icon: '⚡' },
-  { path: '/quantum-lab', label: 'Quantum Lab', icon: '⚗' },
 ]
 
 export const useKeyboardShortcuts = (options = {}) => {
@@ -154,7 +152,6 @@ export const KeyboardShortcutsHelp = ({ isOpen, onClose }) => {
       { keys: 'g p', description: 'Progress' },
       { keys: 'g s', description: 'Games' },
       { keys: 'g e', description: 'Error Lab' },
-      { keys: 'g l', description: 'Quantum Lab' },
     ],
     'Actions': [
       { keys: '?', description: 'Show shortcuts' },

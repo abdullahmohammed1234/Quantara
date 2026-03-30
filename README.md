@@ -10,7 +10,6 @@ An AI-powered interactive quantum computing learning platform with 3D visualizat
 - **Gate Library**: Comprehensive library of quantum gates with visualizations
 - **Algorithm Playground**: Interactive quantum algorithm demonstrations
 - **Quantum Error Lab**: Explore quantum errors, decoherence, and noise effects
-- **Quantum Lab Challenges**: Gamified learning with interactive challenges and XP system
 - **AI Quantum Tutor**: Chat interface with code generation (Qiskit, Q#), contextual hints, and chat history
 - **Onboarding Tutorial**: Step-by-step guided tour explaining quantum concepts
 - **Global Search**: Ctrl+K search for gates, algorithms, and challenges
@@ -82,8 +81,7 @@ An AI-powered interactive quantum computing learning platform with 3D visualizat
 4. Navigate using the sidebar to explore different sections
 5. Visit the **Qubits** page to interact with the Bloch sphere
 6. Use the **AI Tutor** panel on the right to ask quantum computing questions
-7. Complete challenges in **Quantum Lab** to earn XP
-8. Press **Ctrl+K** to search across the platform
+7. Press **Ctrl+K** to search across the platform
 9. Visit the **Tutorial** page for a guided introduction
 
 ## Learning Resources
@@ -162,7 +160,6 @@ Quantara/
 │   │   │   ├── AlgorithmsPage.jsx
 │   │   │   ├── GateLibraryPage.jsx
 │   │   │   ├── ChallengePage.jsx
-│   │   │   ├── QuantumLab.jsx
 │   │   │   ├── SharedCircuitPage.jsx
 │   │   │   └── TutorialPage.jsx
 │   │   ├── styles/                     # Global styles
@@ -217,7 +214,6 @@ The sidebar provides access to:
 - **Algorithms** - Algorithm playground
 - **Gate Library** - Comprehensive gate reference
 - **Error Lab** - Quantum error exploration
-- **Quantum Lab** - Challenge-based learning
 - **Tutorial** - Guided onboarding
 
 ## Environment Variables

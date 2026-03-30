@@ -93,13 +93,6 @@ const HomePage = () => {
       description: 'Study quantum errors and decoherence effects',
       path: '/error-playground',
       color: '#f59e0b'
-    },
-    {
-      icon: '⚗',
-      title: 'Quantum Lab',
-      description: 'Run quantum experiments and algorithms',
-      path: '/quantum-lab',
-      color: '#10b981'
     }
   ]
 

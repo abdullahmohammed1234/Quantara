@@ -3750,12 +3750,6 @@ QUANTUM LAB - GAMIFIED CHALLENGES
 =========================================================================== */
 
 /* Header Styles */
-.quantum-lab-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-}
 
 .header-info {
   flex: 1;
@@ -4104,15 +4098,7 @@ QUANTUM LAB - GAMIFIED CHALLENGES
     grid-template-columns: 1fr;
   }
   
-  .quantum-lab-header {
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .header-stats {
-    width: 100%;
-    justify-content: space-around;
-  }
+
 }
 
 /* ============================================================================
@@ -5649,8 +5635,7 @@ PROGRESS TRACKER COMPONENT
 /* Page padding standardization */
 .home-page,
 .circuits-page,
-.shared-circuit-page,
-.quantum-lab-page {
+.shared-circuit-page {
   padding: var(--spacing-xl);
 }
 
@@ -5658,8 +5643,7 @@ PROGRESS TRACKER COMPONENT
 @media (max-width: 1024px) {
   .home-page,
   .circuits-page,
-  .shared-circuit-page,
-  .quantum-lab-page {
+  .shared-circuit-page {
     padding: var(--spacing-lg);
   }
 }
@@ -5667,8 +5651,7 @@ PROGRESS TRACKER COMPONENT
 @media (max-width: 768px) {
   .home-page,
   .circuits-page,
-  .shared-circuit-page,
-  .quantum-lab-page {
+  .shared-circuit-page {
     padding: var(--spacing-md);
   }
 }
@@ -5676,8 +5659,7 @@ PROGRESS TRACKER COMPONENT
 @media (max-width: 480px) {
   .home-page,
   .circuits-page,
-  .shared-circuit-page,
-  .quantum-lab-page {
+  .shared-circuit-page {
     padding: var(--spacing-sm);
   }
 }

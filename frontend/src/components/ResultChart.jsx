@@ -7,9 +7,15 @@ import React from 'react'
  */
 const ResultChart = ({ result, noiseEnabled, noiseLevel }) => {
   // Extract probabilities
-  const probabilities = result?.probabilities || { '0': 0.5, '1': 0.5 }
-  const p0 = probabilities['0'] || 0
-  const p1 = probabilities['1'] || 0
+  const rawProbabilities = result?.probabilities || { '0': 0.5, '1': 0.5 }
+  const rawP0 = rawProbabilities['0'] || 0
+  const rawP1 = rawProbabilities['1'] || 0
+  
+  // Normalize probabilities to ensure they always sum to 100%
+  const total = rawP0 + rawP1
+  const p0 = total > 0 ? rawP0 / total : 0.5
+  const p1 = total > 0 ? rawP1 / total : 0.5
+  
   const circuit = result?.circuit || []
   const shots = result?.shots || 1000
 

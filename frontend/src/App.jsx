@@ -12,7 +12,6 @@ import { BottomNavigation } from './components/ui'
 import HomePage from './pages/HomePage'
 import QubitsPage from './pages/QubitsPage'
 import CircuitsPage from './pages/CircuitsPage'
-import QuantumLabPage from './pages/QuantumLab'
 import AlgorithmsPage from './pages/AlgorithmsPage'
 import GateLibraryPage from './pages/GateLibraryPage'
 import ChallengePage from './pages/ChallengePage'
@@ -289,7 +288,6 @@ const App = () => {
                         <Route path="/gate-library" element={<GateLibraryPage />} />
                         <Route path="/challenge/:challengeId" element={<ChallengePage />} />
                         <Route path="/error-playground" element={<QuantumErrorPlayground />} />
-                        <Route path="/quantum-lab" element={<QuantumLabPage />} />
                       <Route path="/tutorial" element={<TutorialPage />} />
                       </Route>
                     </Routes>

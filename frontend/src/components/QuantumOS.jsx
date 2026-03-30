@@ -190,7 +190,6 @@ const Dock = ({ activeApp, onAppClick }) => {
     { id: 'qubits', icon: '◈', label: 'Qubits', path: '/qubits', color: '#00d4ff' },
     { id: 'circuits', icon: '⊞', label: 'Circuits', path: '/circuits', color: '#8b5cf6' },
     { id: 'error', icon: '⚡', label: 'Error Lab', path: '/error-playground', color: '#f59e0b' },
-    { id: 'lab', icon: '⚗', label: 'Quantum Lab', path: '/quantum-lab', color: '#10b981' },
     { id: 'tutor', icon: '🤖', label: 'AI Tutor', path: '/tutor', color: '#8b5cf6' },
   ]
 
